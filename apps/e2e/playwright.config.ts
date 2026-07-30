@@ -88,9 +88,13 @@ export default defineConfig({
           url: apiURL,
         },
         {
-          command:
-            "bun run --cwd apps/docs start -- --hostname 127.0.0.1 --port 3001",
+          command: "bun run --cwd apps/docs start:prod",
           cwd: repositoryRoot,
+          env: {
+            ...process.env,
+            HOSTNAME: "127.0.0.1",
+            PORT: "3001",
+          },
           gracefulShutdown: {
             signal: "SIGTERM",
             timeout: 1_000,
@@ -101,9 +105,13 @@ export default defineConfig({
           url: docsURL,
         },
         {
-          command:
-            "bun run --cwd apps/web start -- --hostname 127.0.0.1 --port 3000",
+          command: "bun run --cwd apps/web start:prod",
           cwd: repositoryRoot,
+          env: {
+            ...process.env,
+            HOSTNAME: "127.0.0.1",
+            PORT: "3000",
+          },
           gracefulShutdown: {
             signal: "SIGTERM",
             timeout: 1_000,

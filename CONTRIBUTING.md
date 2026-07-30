@@ -49,6 +49,14 @@ bun run check
 bun run audit
 bun run build
 bun run test:e2e
+bun run docker:config
+```
+
+If a change affects container builds or runtime configuration, also run:
+
+```bash
+bun run docker:prod
+bun run docker:prod:down
 ```
 
 On Linux, install Playwright and its system dependencies with:

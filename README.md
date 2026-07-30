@@ -21,6 +21,9 @@ already wired into Turbo.
 - Shared, type-aware ESLint flat configurations
 - Shared strict TypeScript configurations
 - Repository-wide Prettier formatting
+- Centralized, deployable builds under `dist/<app>`
+- Docker Compose development with automatic source synchronization
+- Hardened, multi-stage production containers with health checks
 - Production builds and E2E servers managed automatically
 - TypeScript 7 compiler with a TypeScript 6 compatibility layer
 
@@ -34,7 +37,7 @@ Versions were verified on July 30, 2026.
 | Node.js                 | `^22.13.0` or `>=24.0.0` | Runtime                           |
 | Turborepo               |                   2.10.7 | Task graph and caching            |
 | TypeScript CLI          |                    7.0.2 | Type checking                     |
-| TypeScript compiler API |                    6.0.2 | Tooling compatibility             |
+| TypeScript compiler API |                    6.0.3 | Tooling compatibility             |
 | Next.js                 |                  16.2.12 | `web` and `docs` applications     |
 | React / React DOM       |                   19.2.8 | Frontend runtime                  |
 | NestJS                  |                  11.1.28 | API framework                     |
@@ -45,6 +48,8 @@ Versions were verified on July 30, 2026.
 | Prettier                |                    3.9.6 | Formatting                        |
 | Jest                    |                   30.4.2 | NestJS unit tests                 |
 | Playwright              |                   1.62.0 | API and browser E2E tests         |
+| Docker                  |                   29.6.2 | Verified container engine         |
+| Docker Compose          |                    5.3.1 | Development and production stacks |
 
 ## Repository structure
 
@@ -59,6 +64,15 @@ Versions were verified on July 30, 2026.
 │   ├── eslint-config        # Shared base, Nest, Next, and React rules
 │   ├── typescript-config    # Shared strict TypeScript profiles
 │   └── ui                   # Shared shadcn/ui design system
+├── scripts
+│   └── package-next.mjs     # Packages standalone Next.js runtimes
+├── dist                     # Generated deployable outputs, never committed
+│   ├── api
+│   ├── docs
+│   └── web
+├── compose.yaml             # Development stack with Compose Watch
+├── compose.prod.yaml        # Hardened production overrides
+├── Dockerfile               # Shared multi-stage image definition
 ├── prettier.config.mjs
 ├── turbo.json
 └── package.json
@@ -115,6 +129,25 @@ bunx turbo dev --filter=docs
 bunx turbo dev --filter=api
 ```
 
+### Start development with Docker
+
+Docker development requires Docker Compose 5 or newer:
+
+```bash
+bun run docker:dev
+```
+
+Compose Watch synchronizes application and shared-package changes into the
+containers. Next.js hot reload and NestJS watch mode then apply the changes
+without rebuilding an image. Dependency manifest or lockfile changes trigger a
+rebuild automatically.
+
+Stop the stack with `Ctrl+C`, followed by:
+
+```bash
+bun run docker:down
+```
+
 ## Commands
 
 Run these commands from the repository root.
@@ -134,6 +167,11 @@ Run these commands from the repository root.
 | `bun run test:e2e`         | Build the apps and run Playwright headlessly  |
 | `bun run test:e2e:install` | Install Playwright browser binaries           |
 | `bun run test:e2e:ui`      | Build the apps and open Playwright UI mode    |
+| `bun run docker:config`    | Validate development and production Compose   |
+| `bun run docker:dev`       | Start containers with automatic reload        |
+| `bun run docker:down`      | Stop the development stack                    |
+| `bun run docker:prod`      | Build and start hardened production images    |
+| `bun run docker:prod:down` | Stop the production stack                     |
 
 Useful workspace-specific commands:
 
@@ -177,6 +215,55 @@ bun run test:e2e
 
 The Playwright configuration records screenshots and videos on failures,
 captures a trace on the first retry, and generates an HTML report.
+
+## Build outputs
+
+All production artifacts are generated at the repository root:
+
+```text
+dist/
+├── api/                    # Compiled NestJS application
+├── docs/                   # Standalone Next.js docs runtime
+└── web/                    # Standalone Next.js web runtime
+```
+
+Next.js does not permit `distDir` to leave an application directory. Each Next
+build therefore uses `.next` as a temporary workspace, creates a standalone
+runtime, copies the runtime, static assets, and public files into
+`dist/<app>`, and removes the temporary `.next` directory.
+
+Turbo caches each application output independently using repository-root
+output globs. This preserves correct cache restoration while the three builds
+run in parallel.
+
+## Docker
+
+The shared `Dockerfile` provides these targets:
+
+| Target        | Purpose                                              |
+| ------------- | ---------------------------------------------------- |
+| `development` | Bun toolchain, all workspaces, and writable sources  |
+| `api`         | NestJS output with filtered production dependencies  |
+| `docs`        | Minimal Node.js image with the standalone docs build |
+| `web`         | Minimal Node.js image with the standalone web build  |
+
+Production images use pinned multi-architecture base-image digests,
+multi-stage builds, BuildKit cache mounts, SBOM and provenance attestations,
+non-root users, read-only root filesystems, dropped Linux capabilities,
+`no-new-privileges`, bounded PID counts, temporary writable caches, health
+checks, graceful shutdown, and rotated local logs.
+
+Start all production services and wait for their health checks:
+
+```bash
+bun run docker:prod
+```
+
+Stop them:
+
+```bash
+bun run docker:prod:down
+```
 
 ## End-to-end testing
 
@@ -263,7 +350,7 @@ Every TypeScript workspace installs:
 
 - `@typescript/native`, aliased to `typescript@7.0.2`, which provides the `tsc`
   binary used by the scripts
-- `typescript@6.0.2`, which provides the compiler API currently required by
+- `typescript@6.0.3`, which provides the compiler API currently required by
   tools such as `typescript-eslint`, `ts-jest`, and the Nest CLI
 
 This keeps the repository on the TypeScript 7 compiler without breaking tools
@@ -279,14 +366,17 @@ that have not yet migrated their compiler API integration.
 | `E2E_DOCS_URL`        | `http://127.0.0.1:3001` | Docs target for Playwright                                     |
 | `E2E_WEB_URL`         | `http://127.0.0.1:3000` | Web target for Playwright                                      |
 | `E2E_INCLUDE_FIREFOX` | unset                   | Force Firefox into the macOS test matrix                       |
+| `API_PORT`            | `3002`                  | Host port published by Compose for the API                     |
+| `DOCS_PORT`           | `3001`                  | Host port published by Compose for docs                        |
+| `WEB_PORT`            | `3000`                  | Host port published by Compose for web                         |
 
 When all three E2E URLs are supplied, Playwright tests that environment without
 starting the local production servers.
 
 ## Turbo behavior
 
-- Builds depend on upstream workspace builds and cache `.next` and `dist`
-  outputs.
+- Builds depend on upstream workspace builds and cache `dist/<app>` outputs
+  independently from the repository root.
 - Lint and type checks follow workspace dependency order.
 - Unit tests wait for upstream builds.
 - E2E tests explicitly depend on the API, docs, and web production builds.
@@ -310,6 +400,7 @@ bun run check
 bun run audit
 bun run build
 bun run test:e2e
+bun run docker:config
 ```
 
 ## Contributing and support
@@ -334,3 +425,6 @@ This project is released under the [MIT License](LICENSE).
 - [Tailwind CSS](https://tailwindcss.com/docs)
 - [Playwright](https://playwright.dev/docs/intro)
 - [TypeScript](https://www.typescriptlang.org/docs)
+- [Docker build best practices](https://docs.docker.com/build/building/best-practices/)
+- [Docker Compose Watch](https://docs.docker.com/compose/how-tos/file-watch/)
+- [Docker Compose in production](https://docs.docker.com/compose/how-tos/production/)

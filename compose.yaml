@@ -1,0 +1,166 @@
+name: starter-turborepo-next-nest
+
+x-development-build: &development-build
+  context: .
+  dockerfile: Dockerfile
+  target: development
+  pull: true
+
+x-service-defaults: &service-defaults
+  init: true
+  restart: "no"
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+  stop_grace_period: 10s
+
+services:
+  api:
+    <<: *service-defaults
+    build: *development-build
+    command:
+      - bun
+      - run
+      - --cwd
+      - apps/api
+      - dev
+    environment:
+      NODE_PATH: /workspace/apps/api/node_modules
+      NODE_ENV: development
+      PORT: "3002"
+    ports:
+      - "${API_PORT:-3002}:3002"
+    healthcheck:
+      test:
+        - CMD
+        - bun
+        - -e
+        - const response = await fetch("http://127.0.0.1:3002"); if (!response.ok) process.exit(1)
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+    develop:
+      watch:
+        - action: sync
+          path: ./apps/api
+          target: /workspace/apps/api
+          initial_sync: true
+          ignore:
+            - node_modules/
+            - dist/
+            - .turbo/
+        - action: sync
+          path: ./packages
+          target: /workspace/packages
+          initial_sync: true
+          ignore:
+            - node_modules/
+            - .turbo/
+        - action: rebuild
+          path: ./package.json
+        - action: rebuild
+          path: ./bun.lock
+        - action: rebuild
+          path: ./apps/api/package.json
+
+  docs:
+    <<: *service-defaults
+    build: *development-build
+    command:
+      - bun
+      - run
+      - --cwd
+      - apps/docs
+      - dev:docker
+    environment:
+      NEXT_TELEMETRY_DISABLED: "1"
+      NODE_ENV: development
+    ports:
+      - "${DOCS_PORT:-3001}:3001"
+    healthcheck:
+      test:
+        - CMD
+        - bun
+        - -e
+        - const response = await fetch("http://127.0.0.1:3001"); if (!response.ok) process.exit(1)
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+    develop:
+      watch:
+        - action: sync
+          path: ./apps/docs
+          target: /workspace/apps/docs
+          initial_sync: true
+          ignore:
+            - node_modules/
+            - .next/
+            - .turbo/
+        - action: sync
+          path: ./packages
+          target: /workspace/packages
+          initial_sync: true
+          ignore:
+            - node_modules/
+            - .turbo/
+        - action: rebuild
+          path: ./package.json
+        - action: rebuild
+          path: ./bun.lock
+        - action: rebuild
+          path: ./apps/docs/package.json
+        - action: rebuild
+          path: ./packages/ui/package.json
+
+  web:
+    <<: *service-defaults
+    build: *development-build
+    command:
+      - bun
+      - run
+      - --cwd
+      - apps/web
+      - dev:docker
+    environment:
+      NEXT_TELEMETRY_DISABLED: "1"
+      NODE_ENV: development
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    healthcheck:
+      test:
+        - CMD
+        - bun
+        - -e
+        - const response = await fetch("http://127.0.0.1:3000"); if (!response.ok) process.exit(1)
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+    develop:
+      watch:
+        - action: sync
+          path: ./apps/web
+          target: /workspace/apps/web
+          initial_sync: true
+          ignore:
+            - node_modules/
+            - .next/
+            - .turbo/
+        - action: sync
+          path: ./packages
+          target: /workspace/packages
+          initial_sync: true
+          ignore:
+            - node_modules/
+            - .turbo/
+        - action: rebuild
+          path: ./package.json
+        - action: rebuild
+          path: ./bun.lock
+        - action: rebuild
+          path: ./apps/web/package.json
+        - action: rebuild
+          path: ./packages/ui/package.json

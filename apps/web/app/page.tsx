@@ -1,5 +1,6 @@
 import Image, { type ImageProps } from "next/image";
 import { buttonVariants } from "@repo/ui/components/button";
+import { cn } from "@repo/ui/lib/utils";
 import styles from "./page.module.css";
 
 type Props = Omit<ImageProps, "src"> & {
@@ -8,12 +9,22 @@ type Props = Omit<ImageProps, "src"> & {
 };
 
 const ThemeImage = (props: Props) => {
-  const { srcLight, srcDark, ...rest } = props;
+  const { className, srcLight, srcDark, style, ...rest } = props;
 
   return (
     <>
-      <Image {...rest} src={srcLight} className="imgLight" />
-      <Image {...rest} src={srcDark} className="imgDark" />
+      <Image
+        {...rest}
+        src={srcLight}
+        className={cn(className, "imgLight")}
+        style={{ height: "auto", ...style }}
+      />
+      <Image
+        {...rest}
+        src={srcDark}
+        className={cn(className, "imgDark")}
+        style={{ height: "auto", ...style }}
+      />
     </>
   );
 };
@@ -51,6 +62,7 @@ export default function Home() {
               alt="Vercel logomark"
               width={20}
               height={20}
+              style={{ height: "auto" }}
             />
             Deploy now
           </a>

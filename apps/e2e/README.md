@@ -8,8 +8,10 @@ The Playwright Firefox 153 build currently fails macOS code-signature checks
 before creating its temporary profile. Set `E2E_INCLUDE_FIREFOX=true` to retry
 it explicitly after upgrading Playwright.
 
-The Turbo task builds all three applications first. Playwright then starts their
-production servers and shuts them down after the suite.
+The root Turbo task builds all three applications into `dist/<app>` first.
+Playwright then starts their production servers and shuts them down after the
+suite. In CI, Playwright targets the hardened production Compose stack instead,
+so the same scenarios validate the built containers.
 
 ```bash
 # Headless suite

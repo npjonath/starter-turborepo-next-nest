@@ -61,11 +61,32 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      - name: Validate Compose configuration
+        run: bun run docker:config
+
+      - name: Check Dockerfile
+        run: docker build --check .
+
+      - name: Start production containers
+        run: docker compose -f compose.yaml -f compose.prod.yaml up --build --detach --wait --wait-timeout 180
+
       - name: Install Playwright browsers
         run: bunx playwright@1.62.0 install --with-deps chromium firefox webkit
 
       - name: Run end-to-end tests
-        run: bun run test:e2e
+        env:
+          E2E_API_URL: http://127.0.0.1:3002
+          E2E_DOCS_URL: http://127.0.0.1:3001
+          E2E_WEB_URL: http://127.0.0.1:3000
+        run: bun run --cwd apps/e2e test:e2e
+
+      - name: Print container logs
+        if: ${{ failure() }}
+        run: docker compose -f compose.yaml -f compose.prod.yaml logs --no-color
+
+      - name: Stop containers
+        if: ${{ always() }}
+        run: docker compose -f compose.yaml -f compose.prod.yaml down --remove-orphans
 
       - name: Upload Playwright report
         if: ${{ !cancelled() }}
