@@ -9,14 +9,16 @@ updates:
       timezone: Europe/Paris
     open-pull-requests-limit: 10
     ignore:
+      # This is a local alias for typescript@7, not a published npm package.
+      # Dependabot's Bun updater otherwise queries the alias name and gets a 404.
+      - dependency-name: "@typescript/native"
       - dependency-name: typescript
         update-types:
           - version-update:semver-major
     groups:
-      production-dependencies:
-        dependency-type: production
-      development-dependencies:
-        dependency-type: development
+      dependencies:
+        patterns:
+          - "*"
 
   - package-ecosystem: github-actions
     directory: /

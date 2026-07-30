@@ -31,25 +31,25 @@ already wired into Turbo.
 
 Versions were verified on July 30, 2026.
 
-| Tool                    |                  Version | Purpose                           |
-| ----------------------- | -----------------------: | --------------------------------- |
-| Bun                     |                   1.3.14 | Package manager, workspace runner |
-| Node.js                 | `^22.13.0` or `>=24.0.0` | Runtime                           |
-| Turborepo               |                   2.10.7 | Task graph and caching            |
-| TypeScript CLI          |                    7.0.2 | Type checking                     |
-| TypeScript compiler API |                    6.0.3 | Tooling compatibility             |
-| Next.js                 |                  16.2.12 | `web` and `docs` applications     |
-| React / React DOM       |                   19.2.8 | Frontend runtime                  |
-| NestJS                  |                  11.1.28 | API framework                     |
-| shadcn                  |                   4.16.0 | Shared component management       |
-| Base UI                 |                    1.6.0 | Accessible UI primitives          |
-| Tailwind CSS            |                    4.3.3 | Shared styling system             |
-| ESLint                  |                   10.8.0 | Static analysis                   |
-| Prettier                |                    3.9.6 | Formatting                        |
-| Jest                    |                   30.4.2 | NestJS unit tests                 |
-| Playwright              |                   1.62.0 | API and browser E2E tests         |
-| Docker                  |                   29.6.2 | Verified container engine         |
-| Docker Compose          |                    5.3.1 | Development and production stacks |
+| Tool                    |    Version | Purpose                           |
+| ----------------------- | ---------: | --------------------------------- |
+| Bun                     |     1.3.14 | Package manager, workspace runner |
+| Node.js                 | `>=24.0.0` | Runtime                           |
+| Turborepo               |     2.10.7 | Task graph and caching            |
+| TypeScript CLI          |      7.0.2 | Type checking                     |
+| TypeScript compiler API |      6.0.3 | Tooling compatibility             |
+| Next.js                 |    16.2.12 | `web` and `docs` applications     |
+| React / React DOM       |     19.2.8 | Frontend runtime                  |
+| NestJS                  |    11.1.28 | API framework                     |
+| shadcn                  |     4.16.0 | Shared component management       |
+| Base UI                 |      1.6.0 | Accessible UI primitives          |
+| Tailwind CSS            |      4.3.3 | Shared styling system             |
+| ESLint                  |     10.8.0 | Static analysis                   |
+| Prettier                |      3.9.6 | Formatting                        |
+| Jest                    |     30.4.2 | NestJS unit tests                 |
+| Playwright              |     1.62.0 | API and browser E2E tests         |
+| Docker                  |     29.6.2 | Verified container engine         |
+| Docker Compose          |      5.3.1 | Development and production stacks |
 
 ## Repository structure
 

@@ -14,8 +14,8 @@ public issue.
 
 ## Local setup
 
-Install [Bun 1.3.14](https://bun.com/docs/installation) and a supported Node.js
-version (`^22.13.0` or `>=24.0.0`), then run:
+Install [Bun 1.3.14](https://bun.com/docs/installation) and Node.js 24 or newer,
+then run:
 
 ```bash
 bun install --frozen-lockfile
