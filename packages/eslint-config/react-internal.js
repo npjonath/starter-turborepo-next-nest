@@ -1,39 +1,34 @@
-import js from "@eslint/js";
-import eslintConfigPrettier from "eslint-config-prettier";
-import tseslint from "typescript-eslint";
+import eslintReact from "@eslint-react/eslint-plugin";
+import { defineConfig } from "eslint/config";
 import pluginReactHooks from "eslint-plugin-react-hooks";
-import pluginReact from "eslint-plugin-react";
 import globals from "globals";
-import { config as baseConfig } from "./base.js";
+import { baseConfig } from "./base.js";
+
+const reactFiles = ["**/*.{js,mjs,jsx,mjsx,ts,tsx,mtsx}"];
 
 /**
- * A custom ESLint configuration for libraries that use React.
+ * Shared React configuration for browser-facing applications and libraries.
  *
- * @type {import("eslint").Linter.Config[]} */
-export const config = [
+ * @type {import("eslint").Linter.Config[]}
+ */
+export const reactInternalConfig = defineConfig(
   ...baseConfig,
-  js.configs.recommended,
-  eslintConfigPrettier,
-  ...tseslint.configs.recommended,
-  pluginReact.configs.flat.recommended,
   {
+    ...eslintReact.configs["recommended-type-checked"],
+    files: reactFiles,
     languageOptions: {
-      ...pluginReact.configs.flat.recommended.languageOptions,
+      ...eslintReact.configs["recommended-type-checked"].languageOptions,
       globals: {
-        ...globals.serviceworker,
         ...globals.browser,
+        ...globals.serviceworker,
       },
     },
   },
   {
-    plugins: {
-      "react-hooks": pluginReactHooks,
-    },
-    settings: { react: { version: "detect" } },
-    rules: {
-      ...pluginReactHooks.configs.recommended.rules,
-      // React scope no longer necessary with new JSX transform.
-      "react/react-in-jsx-scope": "off",
-    },
+    ...pluginReactHooks.configs.flat.recommended,
+    files: reactFiles,
   },
-];
+);
+
+// Backwards-compatible alias for existing consumers.
+export const config = reactInternalConfig;

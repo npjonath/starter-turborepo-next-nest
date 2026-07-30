@@ -1,10 +1,8 @@
 .page {
   --gray-rgb: 0, 0, 0;
-  --gray-alpha-200: rgba(var(--gray-rgb), 0.08);
   --gray-alpha-100: rgba(var(--gray-rgb), 0.05);
 
   --button-primary-hover: #383838;
-  --button-secondary-hover: #f2f2f2;
 
   display: grid;
   grid-template-rows: 20px 1fr 20px;
@@ -19,11 +17,9 @@
 @media (prefers-color-scheme: dark) {
   .page {
     --gray-rgb: 255, 255, 255;
-    --gray-alpha-200: rgba(var(--gray-rgb), 0.145);
     --gray-alpha-100: rgba(var(--gray-rgb), 0.06);
 
     --button-primary-hover: #ccc;
-    --button-secondary-hover: #1a1a1a;
   }
 }
 
@@ -61,14 +57,17 @@
   gap: 16px;
 }
 
-.ctas a {
+.primary {
   appearance: none;
   border-radius: 128px;
   height: 48px;
   padding: 0 20px;
   font-family: var(--font-geist-sans);
   border: 1px solid transparent;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    border-color 0.2s;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -82,31 +81,6 @@ a.primary {
   background: var(--foreground);
   color: var(--background);
   gap: 8px;
-}
-
-a.secondary {
-  border-color: var(--gray-alpha-200);
-  min-width: 180px;
-}
-
-button.secondary {
-  appearance: none;
-  border-radius: 128px;
-  height: 48px;
-  padding: 0 20px;
-  font-family: var(--font-geist-sans);
-  border: 1px solid transparent;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  line-height: 20px;
-  font-weight: 500;
-  background: transparent;
-  border-color: var(--gray-alpha-200);
-  min-width: 180px;
 }
 
 .footer {
@@ -130,11 +104,6 @@ button.secondary {
 @media (hover: hover) and (pointer: fine) {
   a.primary:hover {
     background: var(--button-primary-hover);
-    border-color: transparent;
-  }
-
-  a.secondary:hover {
-    background: var(--button-secondary-hover);
     border-color: transparent;
   }
 
@@ -162,14 +131,10 @@ button.secondary {
     flex-direction: column;
   }
 
-  .ctas a {
+  .primary {
     font-size: 14px;
     height: 40px;
     padding: 0 16px;
-  }
-
-  a.secondary {
-    min-width: auto;
   }
 
   .footer {

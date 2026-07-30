@@ -1,0 +1,86 @@
+name: Bug report
+description: Report a reproducible problem in the template
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Do not include credentials,
+        personal data, or undisclosed security issues.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - API (NestJS)
+        - Web (Next.js)
+        - Docs (Next.js)
+        - Shared UI
+        - Tooling or configuration
+        - End-to-end tests
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Explain what happened and why it appears to be a bug.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Provide the smallest repository, branch, or steps that reproduce the problem.
+      placeholder: |
+        1. Create a repository from the template
+        2. Run ...
+        3. Open ...
+        4. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include OS, architecture, Bun, Node.js, and browser versions where relevant.
+      placeholder: |
+        OS:
+        Architecture:
+        Bun:
+        Node.js:
+        Browser:
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Paste minimal, redacted output. Remove credentials, tokens, paths, and personal data.
+      render: shell
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and did not find a duplicate.
+          required: true
+        - label: I reproduced this after `bun install --frozen-lockfile`.
+          required: true
+        - label: This is not a security vulnerability.
+          required: true

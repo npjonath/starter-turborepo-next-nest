@@ -1,5 +1,5 @@
 import Image, { type ImageProps } from "next/image";
-import { Button } from "@repo/ui/button";
+import { buttonVariants } from "@repo/ui/components/button";
 import styles from "./page.module.css";
 
 type Props = Omit<ImageProps, "src"> & {
@@ -29,7 +29,7 @@ export default function Home() {
           alt="Turborepo logo"
           width={180}
           height={38}
-          priority
+          preload
         />
         <ol>
           <li>
@@ -58,14 +58,15 @@ export default function Home() {
             href="https://turborepo.dev/docs?utm_source"
             target="_blank"
             rel="noopener noreferrer"
-            className={styles.secondary}
+            className={buttonVariants({
+              className: "min-w-40",
+              size: "lg",
+              variant: "outline",
+            })}
           >
             Read our docs
           </a>
         </div>
-        <Button appName="docs" className={styles.secondary}>
-          Open alert
-        </Button>
       </main>
       <footer className={styles.footer}>
         <a

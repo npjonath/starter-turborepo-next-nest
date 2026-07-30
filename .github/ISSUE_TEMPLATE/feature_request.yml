@@ -1,0 +1,49 @@
+name: Feature request
+description: Propose an improvement to the template
+title: "[Feature]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Explain the problem first. A focused use case makes proposals easier to
+        evaluate and keeps the template broadly useful.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What limitation or recurring need should this solve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the intended behavior and developer experience.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Describe workarounds or other designs you evaluated.
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and tradeoffs
+      description: Note affected workspaces, dependencies, migration impact, and maintenance cost.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and did not find a duplicate.
+          required: true
+        - label: This proposal is useful to template users, not only one product.
+          required: true
